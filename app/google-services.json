@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "984294493616",
+    "project_id": "hushtalk-9bd80",
+    "storage_bucket": "hushtalk-9bd80.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:984294493616:android:8e3b293c3c602fd4749a75",
+        "android_client_info": {
+          "package_name": "com.example.hushtalk"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBakhR1BK_2l_bTkzSty888FAWn0NWtn98"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
