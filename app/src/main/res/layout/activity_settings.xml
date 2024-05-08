@@ -33,35 +33,49 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.235" />
 
-
     <Button
-        android:id="@+id/ecbutton"
+        android:id="@+id/phoneButton"
         android:layout_width="136dp"
         android:layout_height="51dp"
         android:background="@drawable/login_border"
-        android:text="Change Email"
+        android:text="Add Phone Number"
         android:textColor="#800000"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.076"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/receivername"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="44dp"
-        android:fontFamily="@font/poppins_regular"
-        android:gravity="center"
-        android:text="aditya"
-        android:textColor="#800000"
-        android:textSize="25sp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.523"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.42" />
+        app:layout_constraintVertical_bias="0.444" />
 
+    <Button
+        android:id="@+id/aboutButton"
+        android:layout_width="136dp"
+        android:layout_height="51dp"
+        android:background="@drawable/login_border"
+        android:text="About Hushtalk"
+        android:textColor="#800000"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.523"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.592" />
+
+    <Button
+        android:id="@+id/logoutButton"
+        android:layout_width="136dp"
+        android:layout_height="51dp"
+        android:background="@drawable/login_border"
+        android:text="Logout"
+        android:textColor="#800000"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.523"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.733" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
