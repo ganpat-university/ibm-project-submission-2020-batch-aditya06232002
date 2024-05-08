@@ -1,76 +1,94 @@
 package com.example.hushtalk;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
-import android.text.InputType;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class settings extends AppCompatActivity {
 
-    private TextView nameTextView;
-    private Button changeEmailButton;
+    // Firebase authentication instance
+    private FirebaseAuth mAuth;
+
+    // Reference to Firebase Database
+    private DatabaseReference databaseRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
 
-        // Initialize views
-        nameTextView = findViewById(R.id.receivername);
-        changeEmailButton = findViewById(R.id.ecbutton);
+        // Initialize Firebase Authentication instance
+        mAuth = FirebaseAuth.getInstance();
 
-        // Get current user from Firebase Authentication
-        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-        if (currentUser != null) {
-            // Get user's username (you might need to adjust this based on how you store the username)
-            String username = currentUser.getDisplayName();
-            if (username != null && !username.isEmpty()) {
-                // Set user's username as text for the TextView
-                nameTextView.setText(username);
-            }
-        }
+        // Initialize Firebase Database reference
+        databaseRef = FirebaseDatabase.getInstance().getReference();
 
-        // Set click listener for change email button
-        changeEmailButton.setOnClickListener(new View.OnClickListener() {
+        // Find references to buttons
+        Button phoneButton = findViewById(R.id.phoneButton);
+        Button aboutButton = findViewById(R.id.aboutButton);
+        Button logoutButton = findViewById(R.id.logoutButton);
+
+        // Set onClick listener for the "Add Phone Number" button
+        phoneButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showChangeEmailDialog();
+                // Implement functionality to add phone number
+                showPhoneNumberPrompt();
+            }
+        });
+
+        // Set onClick listener for the "About Hushtalk" button
+        aboutButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Display about information
+                displayAboutInfo();
+            }
+        });
+
+        // Set onClick listener for the "Logout" button
+        logoutButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Logout
+                logout();
             }
         });
     }
 
-    private void showChangeEmailDialog() {
+    // Method to show prompt for adding phone number
+    private void showPhoneNumberPrompt() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Change Email");
+        builder.setTitle("Add Phone Number");
+        builder.setMessage("Please enter your phone number:");
 
-        // Set up the input
+        // Add input field for phone number
         final EditText input = new EditText(this);
-        input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
         builder.setView(input);
 
-        // Set up the buttons
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                String newEmail = input.getText().toString().trim();
-                if (!newEmail.isEmpty()) {
-                    updateEmail(newEmail);
-                } else {
-                    Toast.makeText(settings.this, "Please enter a valid email", Toast.LENGTH_SHORT).show();
-                }
+                String phoneNumber = input.getText().toString().trim();
+                // Update database with the entered phone number
+                updatePhoneNumber(phoneNumber);
+                Toast.makeText(settings.this, "Phone number added: " + phoneNumber, Toast.LENGTH_SHORT).show();
             }
         });
         builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -80,48 +98,70 @@ public class settings extends AppCompatActivity {
             }
         });
 
+        // Show the dialog
         builder.show();
     }
 
-    private void updateEmail(final String newEmail) {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+    // Method to update phone number in the database
+    private void updatePhoneNumber(String phoneNumber) {
+        // Get the current user
+        FirebaseUser currentUser = mAuth.getCurrentUser();
 
-        if (user != null) {
-            user.verifyBeforeUpdateEmail(newEmail).addOnSuccessListener(new OnSuccessListener<Void>() {
-                @Override
-                public void onSuccess(Void aVoid) {
-                    // Email updated successfully
-                    // Re-authenticate user with new email
-                    reauthenticateWithNewEmail(newEmail);
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    // Email update failed
-                    Toast.makeText(settings.this, "Failed to update email: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                }
-            });
+        if (currentUser != null) {
+            // Get the user ID of the current user
+            String userId = currentUser.getUid();
+            // Assuming "users" is the node where user information is stored
+            // Update the phone number for the current user
+            databaseRef.child("users").child(userId).child("phoneNumber").setValue(phoneNumber);
+        } else {
+            // User is not logged in, handle accordingly
+            Toast.makeText(this, "User not logged in", Toast.LENGTH_SHORT).show();
         }
     }
 
-    private void reauthenticateWithNewEmail(final String newEmail) {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+    // Method to display about information
+    private void displayAboutInfo() {
+        // Show about information in a toast
+        Toast.makeText(this, "Hushtalk is a secure text transfer app having end to end encryption functionality.", Toast.LENGTH_LONG).show();
+    }
 
-        if (user != null) {
-            user.verifyBeforeUpdateEmail(newEmail).addOnSuccessListener(new OnSuccessListener<Void>() {
-                @Override
-                public void onSuccess(Void aVoid) {
-                    // Email updated successfully
-                    Toast.makeText(settings.this, "Email updated successfully", Toast.LENGTH_SHORT).show();
-                    // Now you can navigate back to the login activity or any other activity
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    // Email update failed
-                    Toast.makeText(settings.this, "Failed to update email: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                }
-            });
+    // Method to logout the user
+    private void logout() {
+        // Logout the user
+        mAuth.signOut();
+        // Navigate to the login activity
+        Intent intent = new Intent(settings.this, Login.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        finish();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.chat) {
+            Intent intent = new Intent(settings.this, chat.class);
+            startActivity(intent);
+            finish();
         }
+
+        if (id == R.id.set) {
+            Intent intent = new Intent(settings.this, settings.class);
+            startActivity(intent);
+            finish();
+        } else if (id == R.id.log) {
+            Intent intent = new Intent(settings.this, Login.class);
+            startActivity(intent);
+            finish();
+        }
+        return super.onOptionsItemSelected(item);
     }
 }
